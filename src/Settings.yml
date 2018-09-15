@@ -1,0 +1,13 @@
+Messages:
+  PlayersOnly: "&cOnly in-game players can use /{COMMAND}"
+  NoPermission: "&cYou do not have permission to use /{COMMAND}"
+  BanFromClaimUsage: "/{COMMAND} <Target Player> - Ban a player from your claim."
+  SettingsReloaded: "&aBFC Settings reloaded!"
+  CantBanSelf: "&cYou cannot ban yourself!"
+  PlayerOffline: "&cNo one with &4{ARGUMENT} &cin their name is Online!"
+  NotInClaim: "&cYou're not in a claim"
+  NotManager: "&cYou're not a manager of that claim!"
+  Exempt: "{PLAYER} cannot be banned from claims!"
+  CantBanTrusted: "&cYou cannot ban players with AccessTrust or higher!"
+  NoSafeLocation: "&c{PLAYER} was not banned because no safe location was found!"
+  BanSuccessful: "&a{PLAYER} was banned from the claim!"
