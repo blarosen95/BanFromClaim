@@ -1,11 +1,16 @@
 package com.github.blarosen95.BFC;
 
+import org.bukkit.Bukkit;
+
+import java.io.File;
 import java.sql.*;
 
 class SQLiteTest {
 
     private static Connection con;
     private static boolean hasData = false;
+    private static File dataFolder = Main.getInstance().getDataFolder();
+    private static String banDBFile = dataFolder.getAbsolutePath() + File.separator + "BFC.db";
 
     public ResultSet displayBans() throws SQLException, ClassNotFoundException {
         if (con == null) {
@@ -18,7 +23,7 @@ class SQLiteTest {
 
     private void getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
-        con = DriverManager.getConnection("jdbc:sqlite:BFC.db");
+        con = DriverManager.getConnection(String.format("jdbc:sqlite:%s", banDBFile));
         initialise();
     }
 

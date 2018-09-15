@@ -5,12 +5,13 @@ import org.bukkit.Bukkit;
 import java.io.File;
 import java.sql.*;
 
-public class CSSQLite {
+@SuppressWarnings("SqlResolve")
+class CSSQLite {
     private static Connection con;
-    private File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("ChestShop").getDataFolder();
-    private String userDBFile = dataFolder.getAbsolutePath() + File.separator + "users.db";
+    private static File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("ChestShop").getDataFolder();
+    private static String userDBFile = dataFolder.getAbsolutePath() + File.separator + "users.db";
 
-    public String getUserDBFile() {
+    String getUserDBFile() {
         return userDBFile;
     }
 
