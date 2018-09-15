@@ -3,7 +3,7 @@ main: com.github.blarosen95.BFC.Main
 version: 1.1.0
 author: The_Dale_Gribble
 description: Ban players from your current Grief Prevention Claim.
-softdepend: [GriefPrevention, WorldGuard, ChestShop]
+softdepend: [GriefPrevention, ChestShop]
 api-version: 1.13
 commands:
   banfromclaim:
@@ -13,6 +13,8 @@ commands:
     usage: /<command>
   unbanfromclaim:
     usage: /<command> <Target Player>
+  claimbans:
+    usage: /<command>
 permissions:
   banfromclaim.ban:
     default: true

@@ -40,7 +40,7 @@ class GriefPreventionHandler {
         }
     }
 
-    //TO-DO: Deprecate this
+    @Deprecated
     Location safeLocation(OfflinePlayer target, Location claimLoc) {
         Claim claim = this.dataStore.getClaimAt(claimLoc, true, null);
         if (claim == null) {

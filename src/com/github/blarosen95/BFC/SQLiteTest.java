@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 
 class SQLiteTest {
 
@@ -11,6 +12,22 @@ class SQLiteTest {
     private static boolean hasData = false;
     private static File dataFolder = Main.getInstance().getDataFolder();
     private static String banDBFile = dataFolder.getAbsolutePath() + File.separator + "BFC.db";
+
+
+    ArrayList listTheirBans(String uuid) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+        ArrayList<Object> listOut = new ArrayList<>();
+
+        PreparedStatement preparedStatement = con.prepareStatement("SELECT banned_player FROM claim_bans WHERE owner_uuid=?");
+        preparedStatement.setString(1, uuid);
+        listOut.add(preparedStatement.executeQuery());
+        PreparedStatement preparedStatement1 = con.prepareStatement("SELECT COUNT(banned_player) FROM claim_bans WHERE owner_uuid=?");
+        preparedStatement1.setString(1, uuid);
+        listOut.add(preparedStatement1.executeQuery());
+        return listOut;
+    }
 
     public ResultSet displayBans() throws SQLException, ClassNotFoundException {
         if (con == null) {

@@ -1,6 +1,8 @@
 package com.github.blarosen95.BFC;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -156,6 +158,32 @@ public class Main extends JavaPlugin implements Listener {
                     assert target != null;
                     sqLiteTest.removeBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
                     cs.sendMessage(String.format("%s is no longer banned from your claims.", target.getName()));
+                } catch (SQLException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            } else if (cmd.getName().equalsIgnoreCase("claimbans")) {
+                SQLiteTest sqLiteTest = new SQLiteTest();
+
+
+                try {
+                    ArrayList claimBansList = sqLiteTest.listTheirBans(player.getUniqueId().toString());
+                    ResultSet bansList = (ResultSet) claimBansList.get(0);
+                    ResultSet bansCount = (ResultSet) claimBansList.get(1);
+                    String listOfBans = "";
+                    String numBans = "0";
+
+                    if (bansCount.next()) {
+                        numBans = bansCount.getString(1);
+                    }
+
+
+                    //TO-DO: change concat to a StringBuilder instance's .append method
+                    while (bansList.next()) {
+                        listOfBans += bansList.getString(1) +", ";
+                    }
+
+                    cs.sendMessage(String.format("You currently have %s players banned from your claims:\n%s", numBans, listOfBans.replaceFirst(", $", "")));
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
