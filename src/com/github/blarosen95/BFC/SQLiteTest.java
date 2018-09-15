@@ -97,7 +97,6 @@ class SQLiteTest {
         }
 
         if (banExists) {
-            System.out.println("Ban found!");
             PreparedStatement prep = con.prepareStatement("DELETE FROM claim_bans WHERE owner=? AND owner_uuid=? AND banned_player=? AND banned_uuid=?");
             prep.setString(1, owner);
             prep.setString(2,ownerUUID);
