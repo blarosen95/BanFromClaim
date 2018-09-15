@@ -20,8 +20,7 @@ import com.Acrobot.Breeze.Utils.BlockUtil;
 
 class ChestShopHandler implements Listener {
 
-    //Having our Event's Priority set to highest SHOULD let our plugin handle the event before ChestShop is allowed to handle it
-    //Apparently the lower the priority, the sooner it is run (go figure), luckily there is a priority lower than that of ChestShop's
+    //Having our Event's Priority set to LOWEST lets our plugin handle the event before ChestShop is allowed to handle it
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteractWithSign(PlayerInteractEvent event) throws SQLException, ClassNotFoundException {
         Block block = event.getClickedBlock();
@@ -34,6 +33,7 @@ class ChestShopHandler implements Listener {
 
         Sign sign;
         SQLiteTest sqLiteTest = new SQLiteTest();
+        CSSQLite cssqLite = new CSSQLite();
 
         //If the block clicked is a sign
         if (BlockUtil.isSign(block)) {
@@ -54,13 +54,15 @@ class ChestShopHandler implements Listener {
 
                     //If the query found that the owner of the claim where the sign is located has the player banned
                     if (resultSet.next()) {
+                        //Cancel the event so that ChestShop never receives it
                         event.setCancelled(true);
                         player.sendMessage(String.format("%s has banned you from their claims, you'll have to shop elsewhere.", owner));
                     }
                 }
                 //If the nested if above didn't run, the claim owner has no ban on the player, and we need to check whether the seller/buyer on the sign has banned the player
                     if (signOwnerName != null) {
-                    ResultSet resultSet = sqLiteTest.findOwnerUUID(signOwnerName);
+                        System.out.println(cssqLite.getUserDBFile());
+                    ResultSet resultSet = cssqLite.findUUID(signOwnerName);
                     if (resultSet != null) {
                         String signOwnerUUID = resultSet.getString(1);
                         ResultSet banCheckSet = sqLiteTest.findBan(signOwnerName, signOwnerUUID, player.getName(), player.getUniqueId().toString());

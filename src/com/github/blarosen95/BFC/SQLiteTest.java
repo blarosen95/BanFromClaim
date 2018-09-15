@@ -103,7 +103,7 @@ class SQLiteTest {
 
     }
 
-    public ResultSet findBan(String owner, String ownerUUID, String bannedPlayer, String bannedUUID) throws SQLException, ClassNotFoundException {
+    ResultSet findBan(String owner, String ownerUUID, String bannedPlayer, String bannedUUID) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
         }
@@ -116,6 +116,7 @@ class SQLiteTest {
         return psQuery.executeQuery();
     }
 
+    @Deprecated
     ResultSet findOwnerUUID(String owner) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
