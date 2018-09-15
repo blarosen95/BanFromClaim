@@ -57,28 +57,9 @@ class ChestShopHandler implements Listener {
                         event.setCancelled(true);
                         player.sendMessage(String.format("%s has banned you from their claims, you'll have to shop elsewhere.", owner));
                     }
-                     else //noinspection Duplicates
-                        if (signOwnerName != null) {
-                        ResultSet resultSet2 = sqLiteTest.findOwnerUUID(signOwnerName);
-                        if (resultSet2 != null) {
-                            //The line below could return a SQL Exception if the signOwnerName has not banned someone from our DB
-                                //Easiest solution is to use ChestShop's account database to grab UUID from names, since it populates when player's first join
-                            String signOwnerUUID = resultSet2.getString(1);
-                            ResultSet banCheckSet = sqLiteTest.findBan(signOwnerName, signOwnerUUID, player.getName(), player.getUniqueId().toString());
-                            if (banCheckSet.next()) {
-                                event.setCancelled(true);
-                                player.sendMessage(String.format("%s has banned you from their shops, you'll have to shop elsewhere.", signOwnerName));
-                            }
-                        }
-                    }
                 }
-                //If the nested if above didn't run, ownerUUID is null and we need to check whether the seller/buyer on the sign has banned the player
-                else //noinspection Duplicates
+                //If the nested if above didn't run, the claim owner has no ban on the player, and we need to check whether the seller/buyer on the sign has banned the player
                     if (signOwnerName != null) {
-                    //In order to find UUID, we have to do a preliminary query
-                    //This query will check our db for signOwnerName and return all associated Owner_UUID records
-                        //Without duplicates for Owner_UUID
-                            //If more than one row is found, it's because there are more than one UUID's associated with the given name (names are unfortunately no longer unique)
                     ResultSet resultSet = sqLiteTest.findOwnerUUID(signOwnerName);
                     if (resultSet != null) {
                         String signOwnerUUID = resultSet.getString(1);
