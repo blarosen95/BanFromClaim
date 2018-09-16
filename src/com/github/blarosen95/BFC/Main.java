@@ -18,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin implements Listener {
     private static Main instance;
     private static Settings settings;
-    private static GriefPreventionHandler griefPrevention;
+    static GriefPreventionHandler griefPrevention;
 
     public Main() {
 

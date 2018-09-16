@@ -31,6 +31,10 @@ class ChestShopHandler implements Listener {
         Action action = event.getAction();
         Player player = event.getPlayer();
 
+        if (Main.griefPrevention.ignoringClaims(player)) {
+            return;
+        }
+
         Sign sign;
         SQLiteTest sqLiteTest = new SQLiteTest();
         CSSQLite cssqLite = new CSSQLite();
