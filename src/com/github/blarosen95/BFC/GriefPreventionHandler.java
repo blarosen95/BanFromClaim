@@ -40,6 +40,16 @@ class GriefPreventionHandler {
         }
     }
 
+    Boolean shouldWarpToSpawn(OfflinePlayer target, Location targetLoc, OfflinePlayer player) {
+        Claim claim = this.dataStore.getClaimAt(targetLoc, true, null);
+        //If the target isn't in any claim
+        if (claim == null) {
+            return false;
+        }
+        //If the target is in a claim owned by the player banning them, this is true.
+        return claim.ownerID == player.getUniqueId();
+    }
+
     @Deprecated
     Location safeLocation(OfflinePlayer target, Location claimLoc) {
         Claim claim = this.dataStore.getClaimAt(claimLoc, true, null);

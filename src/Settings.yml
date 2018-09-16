@@ -10,4 +10,5 @@ Messages:
   Exempt: "{PLAYER} cannot be banned from claims!"
   CantBanTrusted: "&cYou cannot ban players with AccessTrust or higher!"
   NoSafeLocation: "&c{PLAYER} was not banned because no safe location was found!"
-  BanSuccessful: "&a{PLAYER} was banned from the claim!"
+  BanSuccessful: "&a{PLAYER} was banned from your claims!"
+  BanSuccessfulWithWarp: "&a{PLAYER} was banned from your claims and was teleported out of one of your claims!"

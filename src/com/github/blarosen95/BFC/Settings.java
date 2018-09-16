@@ -19,6 +19,7 @@ class Settings {
     String cantBanTrusted;
     String noSafeLocation;
     String banSuccessful;
+    String banSuccessfulWithWarp;
 
     Settings() {
         this.reloadSettings();
@@ -43,5 +44,6 @@ class Settings {
         this.cantBanTrusted = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.CantBanTrusted"));
         this.noSafeLocation = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.NoSafeLocation"));
         this.banSuccessful = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.BanSuccessful"));
+        this.banSuccessfulWithWarp = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.BanSuccessfulWithWarp"));
     }
 }

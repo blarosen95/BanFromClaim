@@ -74,6 +74,22 @@ public class Main extends JavaPlugin implements Listener {
         return instance;
     }
 
+    private OfflinePlayer getOfflinePlayer(Player exempt, String name) {
+        boolean isExecutor = false;
+
+        for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+            if (player.getName().toLowerCase().equals(name.toLowerCase().trim())) {
+                if (player != exempt) {
+                    return player;
+                }
+                isExecutor = true;
+            }
+        }
+
+        return isExecutor ? exempt : null;
+    }
+
+    @Deprecated
     private Player getOnlinePlayer(Player exempt, String name) {
         boolean isExecutor = false;
 
@@ -110,47 +126,66 @@ public class Main extends JavaPlugin implements Listener {
                 player.sendMessage(settings.noPermission.replace("{COMMAND}", alias));
                 return true;
             } else if (cmd.getName().equalsIgnoreCase("banfromclaim")) {
+                //If no arguments were used in the command
                 if (args.length <= 0) {
                     cs.sendMessage(settings.banFromClaimUsage.replace("{COMMAND}", alias));
                     return true;
-                } else {
-                    Player target = this.getOnlinePlayer(player, args[0]);
-                    if (target != null && player.canSee(target)) {
+                }
+                //If arguments were used in the command
+                else {
+                    //Replace with OfflinePlayer
+                    OfflinePlayer target = this.getOfflinePlayer(player, args[0]);
+                    if (target != null && target.isOnline()) {
+                        Player targetPlayer = target.getPlayer();
+                        if (targetPlayer != null && player.canSee(targetPlayer)) {
+                            if (target == player) {
+                                cs.sendMessage(settings.cantBanSelf);
+                                return true;
+                            } else {
+                                String noBanReason = griefPrevention.noBanReason(player, targetPlayer);
+                                if (noBanReason != null) {
+                                    player.sendMessage(noBanReason);
+                                    return true;
+                                } else {
+                                    //If they should be warped to spawn
+                                    if (griefPrevention.shouldWarpToSpawn(target, targetPlayer.getLocation(), player)) {
+                                        //TO-DO: Replace this with a mywarps plugin call for /warp spawn!!!
+                                        Location spawn = new Location(player.getWorld(), (double) 0, (double) 64, (double) 0);
+                                        targetPlayer.teleport(spawn);
+                                        player.sendMessage(settings.banSuccessfulWithWarp.replace("{PLAYER}", target.getName()));
+                                        return true;
+                                    } else {
+                                        // Store the ban in the database
+                                        SQLiteTest sqLiteTest = new SQLiteTest();
+                                        try {
+                                            sqLiteTest.addBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
+                                        } catch (SQLException | ClassNotFoundException e) {
+                                            e.printStackTrace();
+                                        }
+                                        player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    } else if (target != null && !target.isOnline()) {
                         if (target == player) {
                             cs.sendMessage(settings.cantBanSelf);
                             return true;
                         } else {
-                            String noBanReason = griefPrevention.noBanReason(player, target);
-                            if (noBanReason != null) {
-                                player.sendMessage(noBanReason);
-                                return true;
-                            } else {
-
-                                Location loc = griefPrevention.safeLocation(target, target.getLocation());
-                                if (loc == null) {
-                                    player.sendMessage(settings.noSafeLocation.replace("{PLAYER}", target.getName()));
-                                    //Still add them to the database here anyways
-                                    return true;
-                                } else {
-                                    // Store the ban in the database
-                                    SQLiteTest sqLiteTest = new SQLiteTest();
-                                    try {
-                                        sqLiteTest.addBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
-                                    } catch (SQLException | ClassNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                    Location spawn = new Location(player.getWorld(), (double) 0, (double) 64, (double) 0);
-                                    target.teleport(spawn);
-                                    player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
-
-                                    return true;
-                                }
+                            SQLiteTest sqLiteTest = new SQLiteTest();
+                            try {
+                                sqLiteTest.addBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
+                            } catch (SQLException | ClassNotFoundException e) {
+                                e.printStackTrace();
                             }
+                            player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
+                            return true;
                         }
-                    } else {
+                    } /*else {
                         cs.sendMessage(settings.playerOffline.replace("{ARGUMENT}", args[0]));
                         return true;
-                    }
+                    } */
                 }
             } else if (cmd.getName().equalsIgnoreCase("unbanfromclaim")) {
 
@@ -193,6 +228,7 @@ public class Main extends JavaPlugin implements Listener {
                     }
                     if (numBans.equals("0")) {
                         cs.sendMessage("You do not currently have any players banned from your claims.");
+                        return true;
                     }
 
                     //TO-DO: change concat to a StringBuilder instance's .append method
@@ -205,9 +241,11 @@ public class Main extends JavaPlugin implements Listener {
 
                     if (numBans.equals("1")) {
                         cs.sendMessage(String.format("You currently have 1 player banned from your claims:\n%s", listOfBans));
+                        return true;
                     }
                     if (!numBans.equals("0") && !numBans.equals("1")) {
                         cs.sendMessage(String.format("You currently have %s players banned from your claims:\n%s", numBans, listOfBans));
+                        return true;
                     }
 
                 } catch (SQLException | ClassNotFoundException e) {
@@ -218,5 +256,6 @@ public class Main extends JavaPlugin implements Listener {
                 return true;
             }
         }
+        return true;
     }
 }
