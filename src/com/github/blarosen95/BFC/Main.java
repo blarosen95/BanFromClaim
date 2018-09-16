@@ -184,20 +184,32 @@ public class Main extends JavaPlugin implements Listener {
                     ArrayList claimBansList = sqLiteTest.listTheirBans(player.getUniqueId().toString());
                     ResultSet bansList = (ResultSet) claimBansList.get(0);
                     ResultSet bansCount = (ResultSet) claimBansList.get(1);
-                    String listOfBans = "";
+                    StringBuilder builderOfBans = new StringBuilder();
+                    String listOfBans;
                     String numBans = "0";
 
                     if (bansCount.next()) {
                         numBans = bansCount.getString(1);
                     }
-
+                    if (numBans.equals("0")) {
+                        cs.sendMessage("You do not currently have any players banned from your claims.");
+                    }
 
                     //TO-DO: change concat to a StringBuilder instance's .append method
                     while (bansList.next()) {
-                        listOfBans += bansList.getString(1) + ", ";
+                        //listOfBans += bansList.getString(1) + ", ";
+                        builderOfBans.append(bansList.getString(1));
+                        builderOfBans.append(", ");
+                    }
+                    listOfBans = builderOfBans.toString().replaceFirst(", $", "");
+
+                    if (numBans.equals("1")) {
+                        cs.sendMessage(String.format("You currently have 1 player banned from your claims:\n%s", listOfBans));
+                    }
+                    if (!numBans.equals("0") && !numBans.equals("1")) {
+                        cs.sendMessage(String.format("You currently have %s players banned from your claims:\n%s", numBans, listOfBans));
                     }
 
-                    cs.sendMessage(String.format("You currently have %s players banned from your claims:\n%s", numBans, listOfBans.replaceFirst(", $", "")));
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
