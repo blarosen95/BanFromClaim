@@ -3,9 +3,11 @@ package com.github.blarosen95.BFC;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -152,7 +154,19 @@ public class Main extends JavaPlugin implements Listener {
                 }
             } else if (cmd.getName().equalsIgnoreCase("unbanfromclaim")) {
 
-                Player target = this.getOnlinePlayer(player, args[0]);
+                UUID targUUID = null;
+                CSSQLite cssqLite = new CSSQLite();
+                try {
+                    ResultSet rs = cssqLite.findUUID(args[0]);
+                    if (rs.next()) {
+                        targUUID = UUID.fromString(rs.getString(1));
+                    }
+                } catch (SQLException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                OfflinePlayer target = Bukkit.getOfflinePlayer(targUUID);
+
+
                 SQLiteTest sqLiteTest = new SQLiteTest();
                 try {
                     assert target != null;
@@ -180,7 +194,7 @@ public class Main extends JavaPlugin implements Listener {
 
                     //TO-DO: change concat to a StringBuilder instance's .append method
                     while (bansList.next()) {
-                        listOfBans += bansList.getString(1) +", ";
+                        listOfBans += bansList.getString(1) + ", ";
                     }
 
                     cs.sendMessage(String.format("You currently have %s players banned from your claims:\n%s", numBans, listOfBans.replaceFirst(", $", "")));

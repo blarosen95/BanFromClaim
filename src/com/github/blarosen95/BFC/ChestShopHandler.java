@@ -60,8 +60,7 @@ class ChestShopHandler implements Listener {
                     }
                 }
                 //If the nested if above didn't run, the claim owner has no ban on the player, and we need to check whether the seller/buyer on the sign has banned the player
-                    if (signOwnerName != null) {
-                        System.out.println(cssqLite.getUserDBFile());
+                if (signOwnerName != null) {
                     ResultSet resultSet = cssqLite.findUUID(signOwnerName);
                     if (resultSet != null) {
                         String signOwnerUUID = resultSet.getString(1);
