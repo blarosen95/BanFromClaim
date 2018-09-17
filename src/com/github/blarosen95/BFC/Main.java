@@ -234,9 +234,7 @@ public class Main extends JavaPlugin implements Listener {
                         return true;
                     }
 
-                    //TODO: change concat to a StringBuilder instance's .append method
                     while (bansList.next()) {
-                        //listOfBans += bansList.getString(1) + ", ";
                         builderOfBans.append(bansList.getString(1));
                         builderOfBans.append(", ");
                     }

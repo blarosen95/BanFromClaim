@@ -25,6 +25,7 @@ class GriefPreventionHandler {
         return dataStore.getPlayerData(player.getUniqueId()).ignoreClaims;
     }
 
+
     String noBanReason(Player player, Player target) {
         Claim claim = this.dataStore.getClaimAt(player.getLocation(), true, null);
         if (claim == null) {
