@@ -23,7 +23,7 @@ class CSSQLite {
             getConnection();
         }
 
-        PreparedStatement preparedStatement = con.prepareStatement("SELECT uuid FROM accounts WHERE name=?");
+        PreparedStatement preparedStatement = con.prepareStatement("SELECT uuid FROM accounts WHERE name=? COLLATE NOCASE");
         preparedStatement.setString(1, name);
         //con.close();
         return preparedStatement.executeQuery();

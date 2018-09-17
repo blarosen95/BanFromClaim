@@ -13,6 +13,7 @@ commands:
     usage: /<command>
   unbanfromclaim:
     usage: /<command> <Target Player>
+    aliases: [ubfc]
   claimbans:
     usage: /<command>
 permissions:

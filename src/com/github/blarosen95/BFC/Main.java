@@ -192,7 +192,10 @@ public class Main extends JavaPlugin implements Listener {
                     } */
                 }
             } else if (cmd.getName().equalsIgnoreCase("unbanfromclaim")) {
-
+                if (args.length <= 0) {
+                    player.sendMessage(settings.unbanFromClaimUsage.replace("{COMMAND}", alias));
+                    return true;
+                }
                 UUID targUUID = null;
                 CSSQLite cssqLite = new CSSQLite();
                 try {
@@ -202,6 +205,10 @@ public class Main extends JavaPlugin implements Listener {
                     }
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
+                }
+                if (targUUID == null) {
+                    cs.sendMessage(settings.noSuchPlayer.replace("{PLAYER}", args[0]));
+                    return true;
                 }
                 OfflinePlayer target = Bukkit.getOfflinePlayer(targUUID);
 

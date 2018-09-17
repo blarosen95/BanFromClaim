@@ -10,6 +10,7 @@ class Settings {
     String playersOnly;
     String noPermission;
     String banFromClaimUsage;
+    String unbanFromClaimUsage;
     String settingsReloaded;
     String cantBanSelf;
     String playerOffline;
@@ -24,6 +25,7 @@ class Settings {
     String noClaimBans;
     String oneClaimBan;
     String multipleClaimBans;
+    String noSuchPlayer;
 
     Settings() {
         this.reloadSettings();
@@ -53,5 +55,7 @@ class Settings {
         this.noClaimBans = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.NoClaimBans"));
         this.oneClaimBan = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.OneClaimBan"));
         this.multipleClaimBans = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.MultipleClaimBans"));
+        this.noSuchPlayer = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.NoSuchPlayer"));
+        this.unbanFromClaimUsage = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.UnbanFromClaimUsage"));
     }
 }
