@@ -150,7 +150,7 @@ public class Main extends JavaPlugin implements Listener {
                                     return true;
                                 } else {
                                     //If they should be warped to spawn
-                                    if (griefPrevention.shouldWarpToSpawn(target, targetPlayer.getLocation(), player)) {
+                                    if (griefPrevention.shouldWarpToSpawn(targetPlayer.getLocation(), player)) {
                                         //TO-DO: Replace this with a mywarps plugin call for /warp spawn!!!
                                         Location spawn = new Location(player.getWorld(), (double) 0, (double) 64, (double) 0);
                                         targetPlayer.teleport(spawn);
@@ -229,11 +229,12 @@ public class Main extends JavaPlugin implements Listener {
                         numBans = bansCount.getString(1);
                     }
                     if (numBans.equals("0")) {
-                        cs.sendMessage("You do not currently have any players banned from your claims.");
+                        //cs.sendMessage("You do not currently have any players banned from your claims.");
+                        cs.sendMessage(settings.noClaimBans);
                         return true;
                     }
 
-                    //TO-DO: change concat to a StringBuilder instance's .append method
+                    //TODO: change concat to a StringBuilder instance's .append method
                     while (bansList.next()) {
                         //listOfBans += bansList.getString(1) + ", ";
                         builderOfBans.append(bansList.getString(1));
@@ -242,11 +243,13 @@ public class Main extends JavaPlugin implements Listener {
                     listOfBans = builderOfBans.toString().replaceFirst(", $", "");
 
                     if (numBans.equals("1")) {
-                        cs.sendMessage(String.format("You currently have 1 player banned from your claims:\n%s", listOfBans));
+                        //cs.sendMessage(String.format("You currently have 1 player banned from your claims:\n%s", listOfBans));
+                        cs.sendMessage(settings.oneClaimBan.replace("{LIST}", listOfBans));
                         return true;
                     }
                     if (!numBans.equals("0") && !numBans.equals("1")) {
-                        cs.sendMessage(String.format("You currently have %s players banned from your claims:\n%s", numBans, listOfBans));
+                        //cs.sendMessage(String.format("You currently have %s players banned from your claims:\n%s", numBans, listOfBans));
+                        cs.sendMessage(settings.multipleClaimBans.replace("{COUNT}", numBans).replace("{LIST}", listOfBans));
                         return true;
                     }
 

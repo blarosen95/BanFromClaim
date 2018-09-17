@@ -20,6 +20,10 @@ class Settings {
     String noSafeLocation;
     String banSuccessful;
     String banSuccessfulWithWarp;
+    String cantShopHere;
+    String noClaimBans;
+    String oneClaimBan;
+    String multipleClaimBans;
 
     Settings() {
         this.reloadSettings();
@@ -45,5 +49,9 @@ class Settings {
         this.noSafeLocation = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.NoSafeLocation"));
         this.banSuccessful = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.BanSuccessful"));
         this.banSuccessfulWithWarp = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.BanSuccessfulWithWarp"));
+        this.cantShopHere = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.CantShopHere"));
+        this.noClaimBans = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.NoClaimBans"));
+        this.oneClaimBan = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.OneClaimBan"));
+        this.multipleClaimBans = ChatColor.translateAlternateColorCodes('&', config.getString("Messages.MultipleClaimBans"));
     }
 }

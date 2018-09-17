@@ -13,12 +13,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.UUID;
 
 
 import com.Acrobot.Breeze.Utils.BlockUtil;
 
 class ChestShopHandler implements Listener {
+    private static Settings settings = new Settings();
 
     //Having our Event's Priority set to LOWEST lets our plugin handle the event before ChestShop is allowed to handle it
     @EventHandler(priority = EventPriority.LOWEST)
@@ -60,7 +62,8 @@ class ChestShopHandler implements Listener {
                     if (resultSet.next()) {
                         //Cancel the event so that ChestShop never receives it
                         event.setCancelled(true);
-                        player.sendMessage(String.format("%s has banned you from their claims, you'll have to shop elsewhere.", owner));
+                        player.sendMessage(settings.cantShopHere.replace("{PLAYER}", signOwnerName));
+                        return;
                     }
                 }
                 //If the nested if above didn't run, the claim owner has no ban on the player, and we need to check whether the seller/buyer on the sign has banned the player
@@ -71,7 +74,7 @@ class ChestShopHandler implements Listener {
                         ResultSet banCheckSet = sqLiteTest.findBan(signOwnerName, signOwnerUUID, player.getName(), player.getUniqueId().toString());
                         if (banCheckSet.next()) {
                             event.setCancelled(true);
-                            player.sendMessage(String.format("%s has banned you from their shops, you'll have to shop elsewhere.", signOwnerName));
+                            player.sendMessage(settings.cantShopHere.replace("{PLAYER}", signOwnerName));
                         }
                     }
                 }

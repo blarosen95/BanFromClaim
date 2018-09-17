@@ -29,9 +29,13 @@ class GriefPreventionHandler {
         Claim claim = this.dataStore.getClaimAt(player.getLocation(), true, null);
         if (claim == null) {
             return this.settings.notInClaim;
-        } else if (target.hasPermission("banfromclaim.ban.exempt")) {
-            return this.settings.exempt.replace("{PLAYER}", target.getName());
         } else {
+
+            //TODO: delete this
+            System.out.println(claim.allowAccess(target));
+            System.out.println(claim.allowGrantPermission(target));
+
+
             if (claim.isAdminClaim()) {
                 if (!player.hasPermission("GriefPrevention.adminclaims") && claim.allowGrantPermission(player) != null) {
                     return this.settings.notManager;
@@ -40,11 +44,14 @@ class GriefPreventionHandler {
                 return this.settings.notManager;
             }
 
-            return !claim.isAdminClaim() && (claim.allowAccess(target) == null || claim.allowGrantPermission(target) == null) ? this.settings.cantBanTrusted.replace("{PLAYER}", target.getName()) : null;
+            // || claim.allowGrantPermission(target) == null))
+            if (!claim.isAdminClaim() && (claim.allowAccess(target) == null || claim.allowGrantPermission(target) == null))
+                return this.settings.cantBanTrusted.replace("{PLAYER}", target.getName());
+            else return null;
         }
     }
 
-    Boolean shouldWarpToSpawn(OfflinePlayer target, Location targetLoc, OfflinePlayer player) {
+    Boolean shouldWarpToSpawn(Location targetLoc, OfflinePlayer player) {
         Claim claim = this.dataStore.getClaimAt(targetLoc, true, null);
         //If the target isn't in any claim
         if (claim == null) {
