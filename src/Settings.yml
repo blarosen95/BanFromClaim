@@ -18,3 +18,4 @@ Messages:
   CantShopHere: "&c{PLAYER} has banned you from their shops, you'll have to shop elsewhere."
   NoSuchPlayer: "&c{PLAYER} does not exist."
   UnbanFromClaimUsage: "/{COMMAND} <Target Player> - Unban a player from your shops."
+  Unbanned: "&a{PLAYER} &6is no longer banned from your shops."

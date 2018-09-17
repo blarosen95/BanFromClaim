@@ -216,7 +216,8 @@ public class Main extends JavaPlugin implements Listener {
                 try {
                     assert target != null;
                     sqLiteTest.removeBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
-                    cs.sendMessage(String.format("%s is no longer banned from your claims.", target.getName()));
+                    //cs.sendMessage(String.format("%s is no longer banned from your claims.", target.getName()));
+                    cs.sendMessage(settings.unbanned.replace("{PLAYER}", target.getName()));
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
