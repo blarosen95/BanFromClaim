@@ -25,9 +25,6 @@ public class Main extends JavaPlugin implements Listener {
     private static Settings settings;
     static GriefPreventionHandler griefPrevention;
 
-    private static File cSDataFolder = Bukkit.getServer().getPluginManager().getPlugin("ChestShop").getDataFolder();
-    private static String cSUserDBFile = cSDataFolder.getAbsolutePath() + File.separator + "users.db";
-
     public Main() {
 
     }
@@ -57,6 +54,8 @@ public class Main extends JavaPlugin implements Listener {
             instance = this;
             settings = new Settings();
             griefPrevention = new GriefPreventionHandler();
+            File cSDataFolder = Bukkit.getServer().getPluginManager().getPlugin("ChestShop").getDataFolder();
+            String cSUserDBFile = cSDataFolder.getAbsolutePath() + File.separator + "users.db";
 
             String bFCUsersDBFile = this.getDataFolder().getAbsolutePath() + File.separator + "usersCopied.db";
             if (!Files.exists(Paths.get(bFCUsersDBFile))) {
