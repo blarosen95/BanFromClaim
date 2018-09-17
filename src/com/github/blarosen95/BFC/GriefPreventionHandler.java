@@ -3,10 +3,7 @@ package com.github.blarosen95.BFC;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -25,7 +22,7 @@ class GriefPreventionHandler {
         return dataStore.getPlayerData(player.getUniqueId()).ignoreClaims;
     }
 
-
+    @Deprecated
     String noBanReason(Player player, Player target) {
         Claim claim = this.dataStore.getClaimAt(player.getLocation(), true, null);
         if (claim == null) {
@@ -45,10 +42,7 @@ class GriefPreventionHandler {
                 return this.settings.notManager;
             }
 
-            // || claim.allowGrantPermission(target) == null))
-            if (!claim.isAdminClaim() && (claim.allowAccess(target) == null || claim.allowGrantPermission(target) == null))
-                return this.settings.cantBanTrusted.replace("{PLAYER}", target.getName());
-            else return null;
+            return !claim.isAdminClaim() && (claim.allowAccess(target) == null || claim.allowGrantPermission(target) == null) ? this.settings.cantBanTrusted.replace("{PLAYER}", target.getName()) : null;
         }
     }
 
@@ -59,7 +53,7 @@ class GriefPreventionHandler {
             return false;
         }
         //If the target is in a claim owned by the player banning them, this is true.
-        return claim.ownerID == player.getUniqueId();
+        return claim.ownerID.equals(player.getUniqueId());
     }
 
     @Deprecated

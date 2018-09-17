@@ -144,11 +144,13 @@ public class Main extends JavaPlugin implements Listener {
                                 cs.sendMessage(settings.cantBanSelf);
                                 return true;
                             } else {
-                                String noBanReason = griefPrevention.noBanReason(player, targetPlayer);
+
+                                /*String noBanReason = griefPrevention.noBanReason(player, targetPlayer);
                                 if (noBanReason != null) {
                                     player.sendMessage(noBanReason);
                                     return true;
-                                } else {
+                                } else { */
+
                                     //If they should be warped to spawn
                                     if (griefPrevention.shouldWarpToSpawn(targetPlayer.getLocation(), player)) {
                                         //TO-DO: Replace this with a mywarps plugin call for /warp spawn!!!
@@ -167,7 +169,7 @@ public class Main extends JavaPlugin implements Listener {
                                         player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
                                         return true;
                                     }
-                                }
+                                //} commented out for the noBanReason and its following "else {"
                             }
                         }
                     } else if (target != null && !target.isOnline()) {
