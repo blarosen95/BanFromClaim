@@ -1,5 +1,10 @@
 package com.github.blarosen95.BFC;
 
+import java.io.File;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,6 +25,9 @@ public class Main extends JavaPlugin implements Listener {
     private static Settings settings;
     static GriefPreventionHandler griefPrevention;
 
+    private static File cSDataFolder = Bukkit.getServer().getPluginManager().getPlugin("ChestShop").getDataFolder();
+    private static String cSUserDBFile = cSDataFolder.getAbsolutePath() + File.separator + "users.db";
+
     public Main() {
 
     }
@@ -39,14 +47,25 @@ public class Main extends JavaPlugin implements Listener {
     //Register events
     private void registerEvents() {
         registerEvent(new ChestShopHandler());
+        registerEvent(new PlayerConnect());
     }
 
     public void onEnable() {
+
         Plugin griefPreventionPlugin = Bukkit.getPluginManager().getPlugin("GriefPrevention");
         if (griefPreventionPlugin != null && griefPreventionPlugin.isEnabled()) {
             instance = this;
             settings = new Settings();
             griefPrevention = new GriefPreventionHandler();
+
+            String bFCUsersDBFile = this.getDataFolder().getAbsolutePath() + File.separator + "usersCopied.db";
+            if (!Files.exists(Paths.get(bFCUsersDBFile))) {
+                try {
+                    Files.copy(Paths.get(cSUserDBFile), Paths.get(bFCUsersDBFile));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             registerEvents();
 
@@ -82,23 +101,6 @@ public class Main extends JavaPlugin implements Listener {
                 if (player != exempt) {
                     return player;
                 }
-                isExecutor = true;
-            }
-        }
-
-        return isExecutor ? exempt : null;
-    }
-
-    @Deprecated
-    private Player getOnlinePlayer(Player exempt, String name) {
-        boolean isExecutor = false;
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getName().toLowerCase().contains(name.toLowerCase().trim())) {
-                if (player != exempt) {
-                    return player;
-                }
-
                 isExecutor = true;
             }
         }

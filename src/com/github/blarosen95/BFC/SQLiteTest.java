@@ -1,7 +1,5 @@
 package com.github.blarosen95.BFC;
 
-import org.bukkit.Bukkit;
-
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
@@ -27,15 +25,6 @@ class SQLiteTest {
         preparedStatement1.setString(1, uuid);
         listOut.add(preparedStatement1.executeQuery());
         return listOut;
-    }
-
-    public ResultSet displayBans() throws SQLException, ClassNotFoundException {
-        if (con == null) {
-            getConnection();
-        }
-
-        Statement state = con.createStatement();
-        return state.executeQuery("SELECT * FROM CLAIM_BANS");
     }
 
     private void getConnection() throws ClassNotFoundException, SQLException {
