@@ -10,10 +10,9 @@ import java.util.Date;
 
 public class PlayerConnect implements Listener {
 
-    private static CSSQLite cssqLite = new CSSQLite();
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public static void onPlayerConnect(final PlayerJoinEvent event) {
+        CSSQLite cssqLite = new CSSQLite();
         boolean latestAccount = false;
         try {
             latestAccount = cssqLite.findLatest(event.getPlayer().getName(), event.getPlayer().getUniqueId().toString());

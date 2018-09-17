@@ -10,7 +10,7 @@ import java.util.Date;
 class CSSQLite {
     private static Connection con;
 
-    private static File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("BanFromClaim").getDataFolder();
+    private static File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("BanFromShops").getDataFolder();
     private static String userDBCopyFile = dataFolder.getAbsolutePath() + File.separator + "usersCopied.db";
 
     private void getConnection() throws SQLException, ClassNotFoundException {

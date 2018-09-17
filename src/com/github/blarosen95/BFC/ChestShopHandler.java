@@ -52,8 +52,9 @@ class ChestShopHandler implements Listener {
                 String ownerUUID = griefPreventionHandler.findBySign(sign);
                 String signOwnerName = sign.getLine(0);
 
+                //TODO: let's just remove the check for claim owners having bans on the shopper
                 //Let's make sure ownerUUID isn't null (this is a restriction on ChestShop events based on whether the claim owner has banned the player)
-                if (ownerUUID != null) {
+ /*               if (ownerUUID != null) {
                     //Get the name from ownerUUID (even if offline)
                     String owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID)).getName();
                     ResultSet resultSet = sqLiteTest.findBan(owner, ownerUUID, player.getName(), player.getUniqueId().toString());
@@ -65,7 +66,7 @@ class ChestShopHandler implements Listener {
                         player.sendMessage(settings.cantShopHere.replace("{PLAYER}", signOwnerName));
                         return;
                     }
-                }
+                } */
                 //If the nested if above didn't run, the claim owner has no ban on the player, and we need to check whether the seller/buyer on the sign has banned the player
                 if (signOwnerName != null) {
                     ResultSet resultSet = cssqLite.findUUID(signOwnerName);

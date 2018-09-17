@@ -34,7 +34,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     private String redText() {
-        return "\u001b[31;1m" + "BanFromClaim can't start unless GriefPrevention is installed!" + "\u001b[0;m";
+        return "\u001b[31;1m" + "BanFromShops can't start unless GriefPrevention is installed!" + "\u001b[0;m";
     }
 
     private void registerEvent(Listener listener) {
@@ -69,7 +69,7 @@ public class Main extends JavaPlugin implements Listener {
             registerEvents();
 
             Bukkit.getPluginManager().registerEvents(this, this);
-            this.getLogger().info(this.greenText(String.format("BanFromClaim v%s is enabled and working!", this.getDescription().getVersion())));
+            this.getLogger().info(this.greenText(String.format("BanFromShops v%s is enabled and working!", this.getDescription().getVersion())));
             //I will not be releasing this for other servers to use, so any updates can be had through me.
             //this.getUpdate();
         } else {
@@ -109,8 +109,8 @@ public class Main extends JavaPlugin implements Listener {
 
     public boolean onCommand(CommandSender cs, Command cmd, String alias, String[] args) {
 
-        if (cmd.getName().equalsIgnoreCase("BFCReload")) {
-            if (!cs.hasPermission("banfromclaim.reload")) {
+        if (cmd.getName().equalsIgnoreCase("BFSReload")) {
+            if (!cs.hasPermission("banfromshops.reload")) {
                 cs.sendMessage(settings.noPermission.replace("{COMMAND}", alias));
                 return true;
             } else {
@@ -123,10 +123,10 @@ public class Main extends JavaPlugin implements Listener {
             return true;
         } else {
             Player player = (Player) cs;
-            if (!player.hasPermission("banfromclaim.ban")) {
+            if (!player.hasPermission("banfromshops.ban")) {
                 player.sendMessage(settings.noPermission.replace("{COMMAND}", alias));
                 return true;
-            } else if (cmd.getName().equalsIgnoreCase("banfromclaim")) {
+            } else if (cmd.getName().equalsIgnoreCase("banfromshops")) {
                 //If no arguments were used in the command
                 if (args.length <= 0) {
                     cs.sendMessage(settings.banFromClaimUsage.replace("{COMMAND}", alias));
@@ -143,13 +143,6 @@ public class Main extends JavaPlugin implements Listener {
                                 cs.sendMessage(settings.cantBanSelf);
                                 return true;
                             } else {
-
-                                /*String noBanReason = griefPrevention.noBanReason(player, targetPlayer);
-                                if (noBanReason != null) {
-                                    player.sendMessage(noBanReason);
-                                    return true;
-                                } else { */
-
                                     //If they should be warped to spawn
                                     if (griefPrevention.shouldWarpToSpawn(targetPlayer.getLocation(), player)) {
                                         //TO-DO: Replace this with a mywarps plugin call for /warp spawn!!!
@@ -168,7 +161,6 @@ public class Main extends JavaPlugin implements Listener {
                                         player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
                                         return true;
                                     }
-                                //} commented out for the noBanReason and its following "else {"
                             }
                         }
                     } else if (target != null && !target.isOnline()) {
@@ -185,12 +177,9 @@ public class Main extends JavaPlugin implements Listener {
                             player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
                             return true;
                         }
-                    } /*else {
-                        cs.sendMessage(settings.playerOffline.replace("{ARGUMENT}", args[0]));
-                        return true;
-                    } */
+                    }
                 }
-            } else if (cmd.getName().equalsIgnoreCase("unbanfromclaim")) {
+            } else if (cmd.getName().equalsIgnoreCase("unbanfromshops")) {
                 if (args.length <= 0) {
                     player.sendMessage(settings.unbanFromClaimUsage.replace("{COMMAND}", alias));
                     return true;
@@ -216,13 +205,12 @@ public class Main extends JavaPlugin implements Listener {
                 try {
                     assert target != null;
                     sqLiteTest.removeBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
-                    //cs.sendMessage(String.format("%s is no longer banned from your claims.", target.getName()));
                     cs.sendMessage(settings.unbanned.replace("{PLAYER}", target.getName()));
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
                 return true;
-            } else if (cmd.getName().equalsIgnoreCase("claimbans")) {
+            } else if (cmd.getName().equalsIgnoreCase("shopbans")) {
                 SQLiteTest sqLiteTest = new SQLiteTest();
 
 

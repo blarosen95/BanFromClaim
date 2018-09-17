@@ -1,25 +1,25 @@
-name: BanFromClaim
+name: BanFromShops
 main: com.github.blarosen95.BFC.Main
 version: 1.1.0
 author: The_Dale_Gribble
-description: Ban players from your current Grief Prevention Claim.
-softdepend: [GriefPrevention, ChestShop]
+description: Ban players from your ChestShop shops and, if they are within one of your claims, warps them to spawn.
+depend: [GriefPrevention, ChestShop]
 api-version: 1.13
 commands:
-  banfromclaim:
+  banfromshops:
     usage: /<command> <Target Player>
-    aliases: [bfc]
-  bfcreload:
+    aliases: [bfs]
+  bfsreload:
     usage: /<command>
-  unbanfromclaim:
+  unbanfromshops:
     usage: /<command> <Target Player>
-    aliases: [ubfc]
-  claimbans:
+    aliases: [ubfs]
+  shopbans:
     usage: /<command>
 permissions:
-  banfromclaim.ban:
+  banfromshops.ban:
     default: true
-  banfromclaim.ban.exempt:
+  banfromshops.ban.exempt:
     default: op
-  banfromclaim.reload:
+  banfromshops.reload:
     default: op
