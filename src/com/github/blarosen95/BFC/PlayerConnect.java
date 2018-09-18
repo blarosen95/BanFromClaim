@@ -21,13 +21,13 @@ class PlayerConnect implements Listener {
         }
         if (!latestAccount) {
             try {
-                cssqLite.addAccount(event.getPlayer().getName(), "TO-DO", event.getPlayer().getUniqueId().toString(), new Date());
+                cssqLite.addAccount(event.getPlayer().getName(), event.getPlayer().getUniqueId().toString(), new Date());
             } catch (SQLException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                cssqLite.updateAccount(event.getPlayer().getName(), "TO-DO", event.getPlayer().getUniqueId().toString(), new Date());
+                cssqLite.updateAccount(event.getPlayer().getUniqueId().toString(), new Date());
             } catch (SQLException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

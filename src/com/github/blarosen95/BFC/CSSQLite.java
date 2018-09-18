@@ -40,20 +40,20 @@ class CSSQLite {
         return preparedStatement.executeQuery().next();
     }
 
-    void addAccount(String playerName, String shortName, String playerUUID, Date lastSeen) throws SQLException, ClassNotFoundException {
+    void addAccount(String playerName, String playerUUID, Date lastSeen) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
         }
 
         PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO accounts (name, shortName, uuid, lastSeen) VALUES(?,?,?,?)");
         preparedStatement.setString(1, playerName);
-        preparedStatement.setString(2, shortName);
+        preparedStatement.setString(2, "TO-DO");
         preparedStatement.setString(3, playerUUID);
         preparedStatement.setLong(4, lastSeen.getTime());
         preparedStatement.execute();
     }
 
-    void updateAccount(String playerName, String shortName, String playerUUID, Date lastSeen) throws SQLException, ClassNotFoundException {
+    void updateAccount(String playerUUID, Date lastSeen) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
         }
