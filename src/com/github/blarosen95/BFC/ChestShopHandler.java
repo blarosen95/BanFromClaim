@@ -44,12 +44,7 @@ class ChestShopHandler implements Listener {
 
             //If it's a valid chest shop sign
             if (ChestShopSign.isValid(sign)) {
-                //Let's find any Claim info on the sign here
-                GriefPreventionHandler griefPreventionHandler = new GriefPreventionHandler();
-                String ownerUUID = griefPreventionHandler.findBySign(sign);
                 String signOwnerName = sign.getLine(0);
-
-                //If the nested if above didn't run, the claim owner has no ban on the player, and we need to check whether the seller/buyer on the sign has banned the player
                 if (signOwnerName != null) {
                     ResultSet resultSet = cssqLite.findUUID(signOwnerName);
                     if (resultSet != null) {
