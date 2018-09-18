@@ -20,8 +20,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin implements Listener {
-    private static Main instance;
+class Main extends JavaPlugin implements Listener {
+    static Main instance;
     private static Settings settings;
     static GriefPreventionHandler griefPrevention;
 
@@ -145,7 +145,6 @@ public class Main extends JavaPlugin implements Listener {
                             } else {
                                     //If they should be warped to spawn
                                     if (griefPrevention.shouldWarpToSpawn(targetPlayer.getLocation(), player)) {
-                                        //TO-DO: Replace this with a mywarps plugin call for /warp spawn!!!
                                         Location spawn = new Location(player.getWorld(), (double) 0, (double) 64, (double) 0);
                                         targetPlayer.teleport(spawn);
                                         player.sendMessage(settings.banSuccessfulWithWarp.replace("{PLAYER}", target.getName()));

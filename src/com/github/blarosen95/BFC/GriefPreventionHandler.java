@@ -22,30 +22,6 @@ class GriefPreventionHandler {
         return dataStore.getPlayerData(player.getUniqueId()).ignoreClaims;
     }
 
-    @Deprecated
-    String noBanReason(Player player, Player target) {
-        Claim claim = this.dataStore.getClaimAt(player.getLocation(), true, null);
-        if (claim == null) {
-            return this.settings.notInClaim;
-        } else {
-
-            //TODO: delete this
-            System.out.println(claim.allowAccess(target));
-            System.out.println(claim.allowGrantPermission(target));
-
-
-            if (claim.isAdminClaim()) {
-                if (!player.hasPermission("GriefPrevention.adminclaims") && claim.allowGrantPermission(player) != null) {
-                    return this.settings.notManager;
-                }
-            } else if (!claim.ownerID.equals(player.getUniqueId()) && claim.allowGrantPermission(player) != null) {
-                return this.settings.notManager;
-            }
-
-            return !claim.isAdminClaim() && (claim.allowAccess(target) == null || claim.allowGrantPermission(target) == null) ? this.settings.cantBanTrusted.replace("{PLAYER}", target.getName()) : null;
-        }
-    }
-
     Boolean shouldWarpToSpawn(Location targetLoc, OfflinePlayer player) {
         Claim claim = this.dataStore.getClaimAt(targetLoc, true, null);
         //If the target isn't in any claim

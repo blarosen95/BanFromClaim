@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.sql.SQLException;
 import java.util.Date;
 
-public class PlayerConnect implements Listener {
+class PlayerConnect implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public static void onPlayerConnect(final PlayerJoinEvent event) {
