@@ -1,5 +1,7 @@
 package com.github.blarosen95.BFC;
 
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ class SQLiteTest {
     private static boolean hasData = false;
     private static File dataFolder = Main.getInstance().getDataFolder();
     private static String banDBFile = dataFolder.getAbsolutePath() + File.separator + "BFC.db";
+    private static NameToUUID nameToUUID = new NameToUUID();
 
 
     ArrayList listTheirBans(String uuid) throws SQLException, ClassNotFoundException {
@@ -45,7 +48,7 @@ class SQLiteTest {
                 Statement state2 = con.createStatement();
 
                 state2.execute("CREATE TABLE claim_bans("
-                + "owner varchar(16)," + "owner_uuid varchar(36),"
+                        + "owner varchar(16)," + "owner_uuid varchar(36),"
                         + "banned_player varchar(16)," + "banned_uuid varchar(36));");
 
                 PreparedStatement prep = con.prepareStatement("INSERT INTO claim_bans (owner, owner_uuid, banned_player, banned_uuid) values(?,?,?,?);");
@@ -53,7 +56,7 @@ class SQLiteTest {
                 prep.setString(2, "069a79f4-44e9-4726-a5be-fca90e38aaf5");
                 prep.setString(3, "_jeb");
                 prep.setString(4, "45f50155-c09f-4fdc-b5ce-e30af2ebd1f0");
-                 prep.execute();
+                prep.execute();
             }
         }
     }
@@ -85,6 +88,35 @@ class SQLiteTest {
         }
     }
 
+    boolean addBanOffline(Player owner, String bannedPlayer) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+
+        String bannedUUID = nameToUUID.getUUID(bannedPlayer);
+
+        if (bannedUUID == null || bannedUUID.equals("invalid name")) {
+            owner.sendMessage(String.format("Could not find the offline player '%s', did you type it correctly?", bannedPlayer));
+            return false;
+        }
+
+        PreparedStatement psQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner_uuid=? AND banned_uuid=?");
+        psQuery.setString(1, owner.getUniqueId().toString());
+        psQuery.setString(2, bannedUUID);
+        ResultSet rsQueried = psQuery.executeQuery();
+        if (rsQueried.next()) {
+            return false;
+        }
+
+        PreparedStatement prep = con.prepareStatement("INSERT INTO claim_bans (owner, owner_uuid, banned_player, banned_uuid) VALUES(?,?,?,?)");
+        prep.setString(1, owner.getName());
+        prep.setString(2, owner.getUniqueId().toString());
+        prep.setString(3, bannedPlayer);
+        prep.setString(4, bannedUUID);
+        prep.execute();
+        return true;
+    }
+
     void removeBan(String owner, String ownerUUID, String bannedPlayer, String bannedUUID) throws SQLException, ClassNotFoundException {
 
         if (con == null) {
@@ -105,7 +137,7 @@ class SQLiteTest {
         if (banExists) {
             PreparedStatement prep = con.prepareStatement("DELETE FROM claim_bans WHERE owner=? AND owner_uuid=? AND banned_player=? AND banned_uuid=?");
             prep.setString(1, owner);
-            prep.setString(2,ownerUUID);
+            prep.setString(2, ownerUUID);
             prep.setString(3, bannedPlayer);
             prep.setString(4, bannedUUID);
             prep.execute();
