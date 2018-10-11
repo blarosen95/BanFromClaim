@@ -185,6 +185,7 @@ public class Main extends JavaPlugin implements Listener {
                 }
                 UUID targUUID = null;
                 CSSQLite cssqLite = new CSSQLite();
+                // TODO: 10/11/2018 We need to stop using the cssqLite class. At least one user has managed to never be added to the copied DB.
                 try {
                     ResultSet rs = cssqLite.findUUID(args[0]);
                     if (rs.next()) {

@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
 import com.Acrobot.Breeze.Utils.BlockUtil;
 
 class ChestShopHandler implements Listener {
@@ -22,6 +21,7 @@ class ChestShopHandler implements Listener {
     //Having our Event's Priority set to LOWEST lets our plugin handle the event before ChestShop is allowed to handle it
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteractWithSign(PlayerInteractEvent event) throws SQLException, ClassNotFoundException {
+        if (event.isCancelled() || event.getClickedBlock() == null || event.getPlayer() == null) return;
         Block block = event.getClickedBlock();
         if (block == null) {
             return;
@@ -37,7 +37,6 @@ class ChestShopHandler implements Listener {
         Sign sign;
         SQLiteTest sqLiteTest = new SQLiteTest();
         CSSQLite cssqLite = new CSSQLite();
-
         //If the block clicked is a sign
         if (BlockUtil.isSign(block)) {
             sign = (Sign) block.getState();
@@ -47,12 +46,18 @@ class ChestShopHandler implements Listener {
                 String signOwnerName = sign.getLine(0);
                 if (signOwnerName != null) {
                     ResultSet resultSet = cssqLite.findUUID(signOwnerName);
-                    if (resultSet != null) {
-                        String signOwnerUUID = resultSet.getString(1);
-                        ResultSet banCheckSet = sqLiteTest.findBan(signOwnerName, signOwnerUUID, player.getName(), player.getUniqueId().toString());
-                        if (banCheckSet.next()) {
-                            event.setCancelled(true);
-                            player.sendMessage(settings.cantShopHere.replace("{PLAYER}", signOwnerName));
+                    if (resultSet != null && resultSet.next()) {
+                        try {
+                            String signOwnerUUID = resultSet.getString(1);
+                            ResultSet banCheckSet = sqLiteTest.findBan(signOwnerName, signOwnerUUID, player.getName(), player.getUniqueId().toString());
+                            // TODO: 10/11/2018 Replace the method used above with a method that doesn't need the signOwnerUUID value!
+                            if (banCheckSet.next()) {
+                                event.setCancelled(true);
+                                player.sendMessage(settings.cantShopHere.replace("{PLAYER}", signOwnerName));
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            System.out.println(String.format("Caused by player '%s' and shop owner '%s'", player, sign.getLine(0)));
                         }
                     }
                 }
