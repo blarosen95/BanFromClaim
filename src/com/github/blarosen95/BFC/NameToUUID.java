@@ -16,7 +16,7 @@ public class NameToUUID {
             String uuidJson = IOUtils.toString(new URL(url), "UTF-8");
             if (uuidJson.isEmpty()) return "invalid name";
             JSONObject uuidObject = (JSONObject) JSONValue.parseWithException(uuidJson);
-            String uuidDirty = uuidObject.get("id").toString(); // TODO: 10/11/2018 Note: this uuid string does not have the dashes!
+            String uuidDirty = uuidObject.get("id").toString(); //This uuid string does not have the dashes
             return uuidDirty.replaceAll(
                     "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})",
                     "$1-$2-$3-$4-$5");

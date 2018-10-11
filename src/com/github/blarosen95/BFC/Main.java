@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -126,7 +125,7 @@ public class Main extends JavaPlugin implements Listener {
             if (!player.hasPermission("banfromshops.ban")) {
                 player.sendMessage(settings.noPermission.replace("{COMMAND}", alias));
                 return true;
-            } else if (cmd.getName().equalsIgnoreCase("banfromshops")) {
+            } else if (cmd.getName().equalsIgnoreCase("shopban")) {
                 //If no arguments were used in the command
                 if (args.length <= 0) {
                     cs.sendMessage(settings.banFromClaimUsage.replace("{COMMAND}", alias));
@@ -143,23 +142,23 @@ public class Main extends JavaPlugin implements Listener {
                                 cs.sendMessage(settings.cantBanSelf);
                                 return true;
                             } else {
-                                    //If they should be warped to spawn
-                                    if (griefPrevention.shouldWarpToSpawn(targetPlayer.getLocation(), player)) {
-                                        Location spawn = new Location(player.getWorld(), (double) 0, (double) 64, (double) 0);
-                                        targetPlayer.teleport(spawn);
-                                        player.sendMessage(settings.banSuccessfulWithWarp.replace("{PLAYER}", target.getName()));
-                                        return true;
-                                    } else {
-                                        // Store the ban in the database
-                                        SQLiteTest sqLiteTest = new SQLiteTest();
-                                        try {
-                                            sqLiteTest.addBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
-                                        } catch (SQLException | ClassNotFoundException e) {
-                                            e.printStackTrace();
-                                        }
-                                        player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
-                                        return true;
+                                //If they should be warped to spawn
+                                if (griefPrevention.shouldWarpToSpawn(targetPlayer.getLocation(), player)) {
+                                    Location spawn = new Location(player.getWorld(), (double) 0, (double) 64, (double) 0);
+                                    targetPlayer.teleport(spawn);
+                                    player.sendMessage(settings.banSuccessfulWithWarp.replace("{PLAYER}", target.getName()));
+                                    return true;
+                                } else {
+                                    // Store the ban in the database
+                                    SQLiteTest sqLiteTest = new SQLiteTest();
+                                    try {
+                                        sqLiteTest.addBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
+                                    } catch (SQLException | ClassNotFoundException e) {
+                                        e.printStackTrace();
                                     }
+                                    player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
+                                    return true;
+                                }
                             }
                         }
                     } else if (target != null && !target.isOnline()) {
@@ -169,7 +168,7 @@ public class Main extends JavaPlugin implements Listener {
                         } else {
                             SQLiteTest sqLiteTest = new SQLiteTest();
                             try {
-                                sqLiteTest.addBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
+                                sqLiteTest.addBanOffline(player, target.getName());
                             } catch (SQLException | ClassNotFoundException e) {
                                 e.printStackTrace();
                             }
@@ -178,34 +177,20 @@ public class Main extends JavaPlugin implements Listener {
                         }
                     }
                 }
-            } else if (cmd.getName().equalsIgnoreCase("unbanfromshops")) {
+            } else if (cmd.getName().equalsIgnoreCase("shopunban")) {
                 if (args.length <= 0) {
                     player.sendMessage(settings.unbanFromClaimUsage.replace("{COMMAND}", alias));
                     return true;
                 }
-                UUID targUUID = null;
-                CSSQLite cssqLite = new CSSQLite();
-                // TODO: 10/11/2018 We need to stop using the cssqLite class. At least one user has managed to never be added to the copied DB.
-                try {
-                    ResultSet rs = cssqLite.findUUID(args[0]);
-                    if (rs.next()) {
-                        targUUID = UUID.fromString(rs.getString(1));
-                    }
-                } catch (SQLException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                if (targUUID == null) {
-                    cs.sendMessage(settings.noSuchPlayer.replace("{PLAYER}", args[0]));
-                    return true;
-                }
-                OfflinePlayer target = Bukkit.getOfflinePlayer(targUUID);
-
 
                 SQLiteTest sqLiteTest = new SQLiteTest();
                 try {
-                    assert target != null;
-                    sqLiteTest.removeBan(cs.getName(), ((Player) cs).getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
-                    cs.sendMessage(settings.unbanned.replace("{PLAYER}", target.getName()));
+                    boolean isRemoved = sqLiteTest.removeBan(player, args[0]);
+                    if (isRemoved) {
+                        cs.sendMessage(settings.unbanned.replace("{PLAYER}", args[0]));
+                    } else {
+                        cs.sendMessage(String.format("%s was NOT unbanned from your shops.", args[0]));
+                    }
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

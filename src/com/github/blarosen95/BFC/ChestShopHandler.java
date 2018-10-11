@@ -36,7 +36,6 @@ class ChestShopHandler implements Listener {
 
         Sign sign;
         SQLiteTest sqLiteTest = new SQLiteTest();
-        CSSQLite cssqLite = new CSSQLite();
         //If the block clicked is a sign
         if (BlockUtil.isSign(block)) {
             sign = (Sign) block.getState();
@@ -45,20 +44,14 @@ class ChestShopHandler implements Listener {
             if (ChestShopSign.isValid(sign)) {
                 String signOwnerName = sign.getLine(0);
                 if (signOwnerName != null) {
-                    ResultSet resultSet = cssqLite.findUUID(signOwnerName);
-                    if (resultSet != null && resultSet.next()) {
-                        try {
-                            String signOwnerUUID = resultSet.getString(1);
-                            ResultSet banCheckSet = sqLiteTest.findBan(signOwnerName, signOwnerUUID, player.getName(), player.getUniqueId().toString());
-                            // TODO: 10/11/2018 Replace the method used above with a method that doesn't need the signOwnerUUID value!
-                            if (banCheckSet.next()) {
-                                event.setCancelled(true);
-                                player.sendMessage(settings.cantShopHere.replace("{PLAYER}", signOwnerName));
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                            System.out.println(String.format("Caused by player '%s' and shop owner '%s'", player, sign.getLine(0)));
-                        }
+                    ResultSet checkBansSet = sqLiteTest.findBan(signOwnerName, player);
+                    //If the ResultSet isn't null and it contains a row,
+                    if (checkBansSet != null && checkBansSet.next()) {
+                        //The row it contains will be this player's ban record for this shop owner.
+                        event.setCancelled(true);
+                        player.sendMessage(settings.cantShopHere.replace("{PLAYER}", signOwnerName));
+                    } else {
+                        return;
                     }
                 }
             }

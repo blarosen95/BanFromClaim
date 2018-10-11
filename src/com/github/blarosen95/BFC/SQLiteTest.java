@@ -117,62 +117,134 @@ class SQLiteTest {
         return true;
     }
 
-    void removeBan(String owner, String ownerUUID, String bannedPlayer, String bannedUUID) throws SQLException, ClassNotFoundException {
-
+    boolean removeBan(Player owner, String bannedPlayer) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
         }
 
-        boolean banExists = false;
-        PreparedStatement psQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner=? AND owner_uuid=? AND banned_player=? AND banned_uuid=?");
-        psQuery.setString(1, owner);
-        psQuery.setString(2, ownerUUID);
-        psQuery.setString(3, bannedPlayer);
-        psQuery.setString(4, bannedUUID);
+        String bannedUUID = nameToUUID.getUUID(bannedPlayer);
+        if (bannedUUID == null || bannedUUID.equals("invalid name")) {
+            owner.sendMessage(String.format("Could not find the player '%s', did you type it correctly?", bannedPlayer));
+            return false;
+        }
+
+        PreparedStatement psQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner_uuid=? AND banned_uuid=?");
+        psQuery.setString(1, owner.getUniqueId().toString());
+        psQuery.setString(2, bannedUUID);
         ResultSet rsQueried = psQuery.executeQuery();
-        if (rsQueried.next()) {
-            banExists = true;
+        if (!rsQueried.next()) {
+            return false;
         }
 
-        if (banExists) {
-            PreparedStatement prep = con.prepareStatement("DELETE FROM claim_bans WHERE owner=? AND owner_uuid=? AND banned_player=? AND banned_uuid=?");
-            prep.setString(1, owner);
-            prep.setString(2, ownerUUID);
-            prep.setString(3, bannedPlayer);
-            prep.setString(4, bannedUUID);
-            prep.execute();
-        }
-
+        PreparedStatement prep = con.prepareStatement("DELETE FROM claim_bans WHERE owner_uuid=? AND banned_uuid=?");
+        prep.setString(1, owner.getUniqueId().toString());
+        prep.setString(2, bannedUUID);
+        prep.execute();
+        return true;
     }
 
-    ResultSet findBan(String owner, String ownerUUID, String bannedPlayer, String bannedUUID) throws SQLException, ClassNotFoundException {
+    ResultSet findBan(String owner, Player bannedPlayer) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
         }
+        String ownerUUID = nameToUUID.getUUID(owner);
+        if (!ownerHasBans(owner) || ownerUUID == null || ownerUUID.equals("invalid name")) {
+            return null; // TODO: 10/11/2018 check for null pointer errors from this before next release! Any null values returned from this method will indicate an event we won't process.
+        }
 
-        PreparedStatement psQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner=? AND owner_uuid=? AND banned_player=? AND banned_uuid=?");
-        psQuery.setString(1, owner);
-        psQuery.setString(2, ownerUUID);
-        psQuery.setString(3, bannedPlayer);
-        psQuery.setString(4, bannedUUID);
+        PreparedStatement psQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner_uuid=? AND banned_uuid=?");
+        psQuery.setString(1, ownerUUID);
+        psQuery.setString(2, bannedPlayer.getUniqueId().toString());
         return psQuery.executeQuery();
     }
 
-    @Deprecated
-    ResultSet findOwnerUUID(String owner) throws SQLException, ClassNotFoundException {
+    private boolean ownerHasBans(String owner) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+        String ownerUUID = nameToUUID.getUUID(owner);
+        if (ownerUUID == null || ownerUUID.equals("invalid name")) {
+            // This means that the name on the sign is outdated and no longer the shop owner's real username. Nothing I can really do about it, players need to keep their signs up to date.
+            return false;
+        }
+        PreparedStatement ownerQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner_uuid=?");
+        ownerQuery.setString(1, ownerUUID);
+        ResultSet rs = ownerQuery.executeQuery();
+        return rs.next();
+    }
+
+    boolean hasBanned(Player who) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
         }
 
-        PreparedStatement psQuery = con.prepareStatement("SELECT COUNT(DISTINCT owner_uuid) FROM claim_bans WHERE owner=?");
-        PreparedStatement psQuery1 = con.prepareStatement("SELECT owner_uuid FROM claim_bans WHERE owner=?");
-        psQuery.setString(1, owner);
-        psQuery1.setString(1, owner);
-        //If the returned result of the query (executed within the if statement) indicates that exactly one owner_uuid exists for the given owner
-        if (Integer.valueOf(psQuery.executeQuery().getString(1)) == 1) {
-            return psQuery1.executeQuery();
-        }
-        return null;
+        PreparedStatement bans = con.prepareStatement("SELECT DISTINCT owner FROM claim_bans WHERE owner_uuid=?");
+        bans.setString(1, who.getUniqueId().toString());
+        ResultSet rs = bans.executeQuery();
+        return rs.next();
     }
 
+    boolean hasBeenBanned(Player who) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+
+        PreparedStatement banned = con.prepareStatement("SELECT * FROM claim_bans WHERE banned_uuid=?");
+        banned.setString(1, who.getUniqueId().toString());
+        ResultSet rs = banned.executeQuery();
+        return rs.next();
+    }
+
+    boolean updateBans(Player who) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+
+        PreparedStatement needUpdateCheck = con.prepareStatement("SELECT owner FROM claim_bans WHERE owner_uuid=?");
+        needUpdateCheck.setString(1, who.getUniqueId().toString());
+        ResultSet ownersSet = needUpdateCheck.executeQuery();
+
+        boolean needsUpdates = false;
+        while (ownersSet.next()) {
+            if (!ownersSet.getString(1).equals(who.getName())) {
+                needsUpdates = true;
+            }
+        }
+        if (!needsUpdates) {
+            return false;
+        }
+
+        PreparedStatement updateStatement = con.prepareStatement("UPDATE claim_bans SET owner=? WHERE owner_uuid=?");
+        updateStatement.setString(1, who.getName()); //new username
+        updateStatement.setString(2, who.getUniqueId().toString()); //uuid
+        updateStatement.execute();
+        return true;
+    }
+
+    boolean updateBanned(Player who) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+
+        PreparedStatement needUpdateCheck = con.prepareStatement("SELECT banned_player FROM claim_bans WHERE banned_uuid=?");
+        needUpdateCheck.setString(1, who.getUniqueId().toString());
+        ResultSet bannedSet = needUpdateCheck.executeQuery();
+
+        boolean needsUpdates = false;
+        while (bannedSet.next()) {
+            if (!bannedSet.getString(1).equals(who.getName())) {
+                needsUpdates = true;
+            }
+        }
+
+        if (!needsUpdates) {
+            return false;
+        }
+
+        PreparedStatement updateStatement = con.prepareStatement("UPDATE claim_bans SET banned_player=? WHERE banned_uuid=?");
+        updateStatement.setString(1, who.getName());
+        updateStatement.setString(2, who.getUniqueId().toString());
+        updateStatement.execute();
+        return true;
+    }
 }
