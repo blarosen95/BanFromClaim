@@ -8,12 +8,10 @@ api-version: 1.13
 commands:
   shopban:
     usage: /<command> <Target Player>
-    aliases: [bfs]
   bfsreload:
     usage: /<command>
   shopunban:
     usage: /<command> <Target Player>
-    aliases: [ubfs]
   shopbans:
     usage: /<command>
 permissions:
