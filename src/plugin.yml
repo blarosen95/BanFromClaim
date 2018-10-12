@@ -1,6 +1,6 @@
 name: BanFromShops
 main: com.github.blarosen95.BFC.Main
-version: 2.0
+version: 2.0.1
 author: The_Dale_Gribble
 description: Ban players from your ChestShop shops and, if they are within one of your claims, warps them to spawn.
 depend: [GriefPrevention, ChestShop]
