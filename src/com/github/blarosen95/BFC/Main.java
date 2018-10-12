@@ -168,13 +168,15 @@ public class Main extends JavaPlugin implements Listener {
                         } else {
                             SQLiteTest sqLiteTest = new SQLiteTest();
                             try {
-                                sqLiteTest.addBanOffline(player, target.getName());
+                                sqLiteTest.addBan(player.getName(), player.getUniqueId().toString(), target.getName(), target.getUniqueId().toString());
                             } catch (SQLException | ClassNotFoundException e) {
                                 e.printStackTrace();
                             }
                             player.sendMessage(settings.banSuccessful.replace("{PLAYER}", target.getName()));
                             return true;
                         }
+                    } else if (target == null) {
+                        player.sendMessage(String.format("'%s' has never played on this server before.", args[0]));
                     }
                 }
             } else if (cmd.getName().equalsIgnoreCase("shopunban")) {
@@ -185,11 +187,21 @@ public class Main extends JavaPlugin implements Listener {
 
                 SQLiteTest sqLiteTest = new SQLiteTest();
                 try {
-                    boolean isRemoved = sqLiteTest.removeBan(player, args[0]);
-                    if (isRemoved) {
-                        cs.sendMessage(settings.unbanned.replace("{PLAYER}", args[0]));
+                    OfflinePlayer target = getOfflinePlayer(player, args[0]);
+                    if (target != null) {
+                        if (target == player) {
+                            player.sendMessage("Why unban yourself?");
+                            return true;
+                        } else {
+                            boolean isRemoved = sqLiteTest.removeBan2(player, target);
+                            if (isRemoved) {
+                                cs.sendMessage(settings.unbanned.replace("{PLAYER}", args[0]));
+                            } else {
+                                cs.sendMessage(String.format("%s was NOT unbanned from your shops.", args[0]));
+                            }
+                        }
                     } else {
-                        cs.sendMessage(String.format("%s was NOT unbanned from your shops.", args[0]));
+                        player.sendMessage(String.format("'%s' has never played on this server before.", args[0]));
                     }
                 } catch (SQLException | ClassNotFoundException e) {
                     e.printStackTrace();

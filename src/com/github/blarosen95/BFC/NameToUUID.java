@@ -1,6 +1,7 @@
 package com.github.blarosen95.BFC;
 
 import org.apache.commons.io.IOUtils;
+import org.bukkit.ChatColor;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 
 public class NameToUUID {
+    @Deprecated
     public String getUUID(String name) {
         String url = "https://api.mojang.com/users/profiles/minecraft/" + name;
 
@@ -21,6 +23,10 @@ public class NameToUUID {
                     "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})",
                     "$1-$2-$3-$4-$5");
         } catch (IOException | ParseException e) {
+            if (e.getMessage().contains("Server returned HTTP response code: 429 for URL")) {
+                System.out.println(ChatColor.RED + "Rate Limit Reached. Informing Player");
+                return "Rate Limited";
+            }
             e.printStackTrace();
         }
         return null;

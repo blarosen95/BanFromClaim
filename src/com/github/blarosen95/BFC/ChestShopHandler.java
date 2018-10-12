@@ -44,7 +44,7 @@ class ChestShopHandler implements Listener {
             if (ChestShopSign.isValid(sign)) {
                 String signOwnerName = sign.getLine(0);
                 if (signOwnerName != null) {
-                    ResultSet checkBansSet = sqLiteTest.findBan(signOwnerName, player);
+                    ResultSet checkBansSet = sqLiteTest.findBan2(signOwnerName, player);
                     //If the ResultSet isn't null and it contains a row,
                     if (checkBansSet != null && checkBansSet.next()) {
                         //The row it contains will be this player's ban record for this shop owner.

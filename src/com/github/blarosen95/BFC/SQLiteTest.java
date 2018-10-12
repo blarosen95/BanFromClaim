@@ -1,5 +1,6 @@
 package com.github.blarosen95.BFC;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -88,6 +89,7 @@ class SQLiteTest {
         }
     }
 
+    @Deprecated
     boolean addBanOffline(Player owner, String bannedPlayer) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
@@ -97,6 +99,12 @@ class SQLiteTest {
 
         if (bannedUUID == null || bannedUUID.equals("invalid name")) {
             owner.sendMessage(String.format("Could not find the offline player '%s', did you type it correctly?", bannedPlayer));
+            return false;
+        }
+
+        // TODO: 10/12/2018 This is the downfall of the API usage...
+        if (bannedUUID.equals("Rate Limited")) {
+            owner.sendMessage(String.format("We can't add a ban for the offline player '%s' right now due to rate limits. You might want to wait for them to come back online.", bannedPlayer));
             return false;
         }
 
@@ -117,6 +125,7 @@ class SQLiteTest {
         return true;
     }
 
+    @Deprecated
     boolean removeBan(Player owner, String bannedPlayer) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
@@ -143,6 +152,27 @@ class SQLiteTest {
         return true;
     }
 
+    boolean removeBan2(Player owner, OfflinePlayer banPlayer) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+
+        PreparedStatement psQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner_uuid=? AND banned_uuid=?");
+        psQuery.setString(1, owner.getUniqueId().toString());
+        psQuery.setString(2, banPlayer.getUniqueId().toString());
+        ResultSet rsQueried = psQuery.executeQuery();
+        if (!rsQueried.next()) {
+            return false;
+        }
+
+        PreparedStatement prep = con.prepareStatement("DELETE FROM claim_bans WHERE owner_uuid=? AND banned_uuid=?");
+        prep.setString(1, owner.getUniqueId().toString());
+        prep.setString(2, banPlayer.getUniqueId().toString());
+        prep.execute();
+        return true;
+    }
+
+    @Deprecated
     ResultSet findBan(String owner, Player bannedPlayer) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
@@ -158,6 +188,22 @@ class SQLiteTest {
         return psQuery.executeQuery();
     }
 
+    ResultSet findBan2(String owner, Player bannedPlayer) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+
+        if (!ownerHasBans2(owner)) {
+            return null; // TODO: 10/12/2018 Confirm no issues from here.
+        }
+
+        PreparedStatement psQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner=? AND banned_uuid=?");
+        psQuery.setString(1, owner);
+        psQuery.setString(2, bannedPlayer.getUniqueId().toString());
+        return psQuery.executeQuery();
+    }
+
+    @Deprecated
     private boolean ownerHasBans(String owner) throws SQLException, ClassNotFoundException {
         if (con == null) {
             getConnection();
@@ -169,6 +215,20 @@ class SQLiteTest {
         }
         PreparedStatement ownerQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner_uuid=?");
         ownerQuery.setString(1, ownerUUID);
+        ResultSet rs = ownerQuery.executeQuery();
+        return rs.next();
+    }
+
+    private boolean ownerHasBans2(String owner) throws SQLException, ClassNotFoundException {
+        if (con == null) {
+            getConnection();
+        }
+        if (owner == null || owner.equals("")) {
+            //Indicates that the sign didn't have a ChestShop owner name on it... todo: check the ChestShopHandler to confirm this is handled already...
+            return false;
+        }
+        PreparedStatement ownerQuery = con.prepareStatement("SELECT * FROM claim_bans WHERE owner=?");
+        ownerQuery.setString(1, owner);
         ResultSet rs = ownerQuery.executeQuery();
         return rs.next();
     }
