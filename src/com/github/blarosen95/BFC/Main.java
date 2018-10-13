@@ -95,11 +95,18 @@ public class Main extends JavaPlugin implements Listener {
         boolean isExecutor = false;
 
         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-            if (player.getName().toLowerCase().equals(name.toLowerCase().trim())) {
-                if (player != exempt) {
-                    return player;
+            if (player.getName() == null) {
+                //The following line is commented out because it will appear in most /shopban and /shopunban commands  due to an already existing player's player data corruption.
+                //System.out.println(String.format("[BanFromShops] Player data with UUID %s is missing a player name. Their player data was probably corrupted."));
+                continue;
+            }
+            if (player.getName() != null) {
+                if (player.getName().toLowerCase().equals(name.toLowerCase().trim())) {
+                    if (player != exempt) {
+                        return player;
+                    }
+                    isExecutor = true;
                 }
-                isExecutor = true;
             }
         }
 
